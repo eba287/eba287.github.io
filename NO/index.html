@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<!-- Use the HTML and CSS you developed in module 01 to fill out this template.-->
+
+<head>
+  <meta charset=utf-8 />
+  <title>Lab 05 Work Template</title>
+
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <link rel='icon' href='https://newmapsplus.github.io/favicon.ico' type='image/x-icon' />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" />
+
+
+  <style>
+    /* The map element */
+    #map {
+      width: 100%;
+      height: 500px;
+    }
+
+    /* Add HTML element styles */
+    body {
+      margin: 0;
+      background: #252735;
+      font-family: 'Questrial', sans-serif;
+      font-Size: 100%;
+      color: #f5f5f5;
+    }
+
+    /* separate elements with the same properties by commas */
+    header,
+    section {
+      width: 80%;
+      margin: 10px auto;
+      /* Don't need commas between param values */
+    }
+
+    footer {
+      width: 100%;
+      margin: 10px, auto;
+      background: #fbfbfb;
+      text-align: center;
+    }
+
+    h1 {
+      font-family: 'Viga', sans-serif;
+      font-size: 48px;
+      letter-spacing: .04em;
+      color: #f5f5f5;
+    }
+
+    h2 {
+      font-family: 'Viga', sans-serif;
+      font-size: 30px;
+      letter-spacing: .04em;
+    }
+
+    p {
+      Font-Size: 15px;
+      line-height: 1.5em;
+    }
+
+    a {
+      color: #5aadf1;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    ul {
+      font-family: 'Questrial', sans-serif;
+      padding-left: 40px;
+    }
+
+    li {
+      margin: 10px 0;
+    }
+
+    hr {
+      margin: 20px 0;
+      border: 0;
+      height: 1px;
+      background: #d3d3d3;
+    }
+
+    .caption {
+      margin: 0 0 20px 0;
+      display: block;
+    }
+
+    /* Change opacity on hover over the icon class */
+
+    .icon:hover {
+      opacity: .8;
+    }
+
+    /* Modify Leaflet's default popup style */
+
+    .leaflet-popup-content h3 {
+      font-family: "Select a Google Font", serif;
+      font-size: 1.3em;
+      margin-bottom: 6px;
+    }
+
+    .leaflet-popup-content p {
+      margin: 3px 0 6px;
+      font-size: 1.1em;
+    }
+
+    .leaflet-popup-content a {
+      font-weight: normal;
+    }
+
+    @media screen and (max-width: 900px) {
+
+      .first-column,
+      .second-column {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>Places of interest in New Orleans, LA </h1>
+  </header>
+
+  <section>
+    <div id='map'></div>
+  </section>
+
+  <section>
+
+    <p>Located near the Gulf of Mexico, and on the Mississippi River, New Orleans is a Louisiana city nicknamed the "Big Easy,". It is known for its round-the-clock nightlife, vibrant live-music scene and spicy, singular cuisine reflecting its
+      history as a melting pot of French, African and American cultures. Embodying its festive spirit is Mardi Gras, the late-winter carnival famed for raucous costumed parades and street parties.
+      <a href="https://www.neworleans.com" target="blank"> Learn more about New Orleans has to offer!</a></p>
+
+    Social media links:
+    <ul>
+      <li>See my projects on GitHub: <a href="https://github.com/eba287" target="blank">Emily Barrett</a></li>
+      <li>Visit my <a href='https://geography.as.uky.edu/users/eba287' target="blank">bio page</a>.</li>
+    </ul>
+    </p>
+
+  </section>
+  <footer>
+    <!-- HTML for page structure goes here-->
+    <hr>
+    <a href="https://newmapsplus.github.io">
+      <img src="https://newmapsplus.github.io/assets/graphics/logo-2018-nmp-75px-h-gray.png" alt="University of Kentucky New Maps Plus">
+    </a>
+
+    <a href="https://uky-gis.github.io">
+      <img src="https://newmapsplus.github.io/assets/graphics/logo-2018-geography-75px-h.png" alt="University of Kentucky Department of Geography">
+    </a>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js"></script>
+  <script>
+    var map = L.map('map', {
+      center: [29.9584, -90.0619],
+      zoom: 14,
+    });
+
+    // Get basemap URL from Leaflet Providers
+    var basemap_url = 'http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png'
+
+    // Get basemap attributes from Leaflet Providers
+    var basemap_attributes = {
+      maxZoom: 18,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    };
+    // requests some map tiles
+    var tiles = L.tileLayer(basemap_url, basemap_attributes);
+
+    map.addLayer(tiles);
+
+    // Begin writing/modifying code for Lab 05 here
+
+    var hotspots = [{
+        name: "Mariza",
+        properties: {
+          description: "Italian-inspired fare dished out in an airy loft building with an industrial-chic vibe.",
+          coordinates: [29.9629337, -90.0501008],
+          url: 'http://marizaneworleans.com/',
+          phone: '(504) 598-5700',
+          icon: 'svgs/restaurant-15.svg'
+        }
+      },
+      {
+        name: "Jackson Square",
+        properties: {
+          description: "Artists & performers ply their trades in a park built in 1721 & lined with historic buildings.",
+          coordinates: [29.9574259, -90.0639605],
+          url: 'https://www.nola.gov/parks-and-parkways/parks-squares/jackson-square/',
+          phone: '(504) 658-3200',
+          icon: 'svgs/landmark-15.svg'
+        }
+      },
+      {
+        name: "New Orleans Historic Voodoo Museum",
+        properties: {
+          description: "Two snug rooms packed with voodoo artifacts, plus a gift shop, both run by voodoo practitioners.",
+          coordinates: [29.959904, -90.063851],
+          url: 'http://voodoomuseum.com',
+          phone: '(504) 680-0128',
+          icon: 'svgs/museum-15.svg'
+        }
+      }
+    ];
+
+    // console.log(hotspots[0].name); // Mariza
+    //
+    // console.log(hotspots[0].properties); // Object { ... }
+    //
+    // console.log(hotspots[0].properties.description); // Italian-inspired fare ...
+    //
+    // console.log(hotspots[0].properties.url); // http://marizaneworleans.com/
+    //
+    // console.log(hotspots[0].properties.coordinates); // [29.9629337, -90.0501008]
+
+    // variable to reference the zero index
+
+    var i = 0;
+    var props = hotspots[i].properties;
+    //
+    // var icon = L.icon({
+    //   iconUrl: props.icon,
+    //   iconSize: [40, 40],
+    //   popupAnchor: [0, -22],
+    //   className: "icon"
+    // });
+
+    mapPlaces(hotspots);
+
+    //assign a string, wrapping the name of the place within two HTML bold tags, and controlling for if the phone number is present
+
+    function mapPlaces(hotspots) {
+      for (var i = 0; i < hotspots.length; i++) {
+        var props = hotspots[i].properties;
+        var icon = L.icon({
+          iconUrl: props.icon,
+          iconSize: [40, 40],
+          popupAnchor: [0, -22],
+          className: "icon"
+        });
+        if (props.phone) {
+          console.log("I have a phone number in this object, so place me!")
+          var popup = `<h3>${hotspots[i].name}</h3>
+             <p>${props.description}</p>
+             <p><b>website</b>: <a href='${props.url}'>${props.url}</a></p>
+             <p><b>phone</b>: ${props.phone}</p>`;
+        } else {
+          var popup = `<h3>${hotspots[i].name}</h3>
+            <p>${props.description}</p>
+            <p><b>website</b>: <a href='${props.url}'>${props.url}</a></p>`
+        };
+
+        var marker = L.marker(hotspots[i].properties.coordinates, {
+            icon: icon
+          })
+          .addTo(map)
+          .bindPopup(popup);
+
+        marker.on("mouseover", function() {
+          this.openPopup();
+        });
+        marker.on("mouseout", function() {
+          this.closePopup();
+        })
+      }
+    };
+
+    // Trying to write out the code in a different way
+    // function mapPlaces(hotspots) {
+    //   for (let i = 0; i < hotspots.length; i++) {
+    //     var props = hotspots[i].properties;
+    //     if (props.phone) {
+    //       console.log("I have a phone number in this object, so place me!")
+    //       let popup = `<h3>${hotspots[i].name}</h3>
+    //  <p>${props.description}</p>
+    //  <p><b>website</b>: <a href='${props.url}'>${props.url}</a></p>
+    //  <p><b>phone</b>: ${props.phone}</p>`;
+    //     } else {
+    //       let popup = `<h3>${hotspots[i].name}</h3>
+    //    <p>${props.description}</p>
+    //    <p><b>website</b>: <a href='${props.url}'>${props.url}</a></p>`
+    //     };
+    //
+    //     var iconLocation = createIcon(hotspots);
+    //
+    //     L.marker(hotspots[i].properties.coordinates, {
+    //         icon: iconLocation // Insert returned function value
+    //       })
+    //       .addTo(map)
+    //       .bindPopup(popup);
+    //   };
+    //
+    //   function createIcon(hotspots) {
+    //     for (var i = 0; i < hotspots.length; i++) {
+    //       let icon = L.icon({
+    //         iconUrl: hotspots[i].properties.icon,
+    //         iconSize: [40, 40],
+    //         popupAnchor: [0, -22],
+    //         className: "icon"
+    //
+    //       })
+    //     };
+    //
+    //   }
+    // };
+  </script>
+
+</body>
+
+</html>
