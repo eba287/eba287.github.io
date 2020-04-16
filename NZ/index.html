@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset=utf-8 />
+	<title>Leaflet Lab 06 Template</title>
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+	<link rel='icon' href='https://newmapsplus.github.io/favicon.ico' type='image/x-icon' />
+
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
+
+	<link href="https://fonts.googleapis.com/css?family=Quicksand:400,700" rel="stylesheet">
+
+
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			font-family: 'Quicksand', sans-serif;
+			font-size: 100%;
+			color: #3d3d3d;
+		}
+
+		h1 {
+			position: absolute;
+			margin-top: 0;
+			top: 10px;
+			left: 15px;
+			font-size: 1.5em;
+			font-family: 'Quicksand', sans-serif;
+			font-weight: 700;
+			letter-spacing: .04em;
+			padding: 10px 15px;
+			/* Add styles to match Leaflet UI elements */
+			background: rgba(256, 256, 256, .3);
+			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+			border: 1px solid #ddd;
+			border-radius: 5px;
+			z-index: 800;
+		}
+
+		h2 {
+			font-family: 'Quicksand', sans-serif;
+			font-size: 1.2em;
+			letter-spacing: .04em;
+
+		}
+
+		#map {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			width: 100%;
+		}
+
+		#about {
+			position: absolute;
+			bottom: 20px;
+			left: 15px;
+			width: 280px;
+			padding: 0 15px;
+			/* Add styles to match Leaflet UI elements */
+			background: rgba(256, 256, 256, .3);
+			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+			border: 1px solid #ddd;
+			border-radius: 5px;
+			z-index: 800;
+		}
+
+		p {
+			font-size: .9em;
+			line-height: 1.5em;
+		}
+
+		a {
+			color: #005daa;
+			text-decoration: none;
+		}
+
+		a:hover {
+			text-decoration: underline;
+		}
+
+		/* Leaflet popup styles */
+		.leaflet-popup-content {
+			font-family: 'Quicksand', sans-serif;
+			font-size: 1.1em;
+		}
+
+		/*
+		When browser is 900px high or less
+		make the font a little smaller.
+		 */
+		@media screen and (max-height: 400px) {
+
+			#about p,
+			#about h2 {
+				font-size: .6em;
+			}
+
+			h1 {
+				font-size: 1.2em;
+			}
+
+			#about h2 {
+				font-size: 1em;
+			}
+
+			.leaflet-popup-content {
+				font-family: 'Quicksand', sans-serif;
+				font-size: 0.9em;
+			}
+		}
+
+		/* Don't display info block when window is very small */
+		@media screen and (max-height: 200px) {
+
+			#about {
+				display: none;
+			}
+		}
+	</style>
+</head>
+
+<body>
+
+	<h1>ROAD TRIP IN NEW ZEALAND!</h1>
+
+	<div id='map'></div>
+
+	<section id="about">
+		<h2>THE PERFECT ROUTE</h2>
+		<p>Every thought about road tripping around New Zealand? This map shows you a perfect seven day road trip featuring some of the North Island's most famous attractions. Click on each marker to discover more.
+			Data inspired by the <a href="https://www.newzealand.com/uk/feature/a-halflings-ramble-1-week-in-middle-earth/"target="blank">New Zealand tourist board.</a> </p>
+		<p>Authored by <a href='https://geography.as.uky.edu/users/eba287' target="blank">Emily Barrett</a></p>
+	</section>
+
+	<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+	<!-- Load a Leaflet plugin to provide geolocation. -->
+	<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+	<script src="data/route3.js"></script>
+	<script>
+		console.log(routeData);
+
+		var options = {
+			center: [38.038685, -84.504164],
+			zoom: 8,
+			zoomControl: false
+		}
+
+		var locate_options = {
+			position: 'topright',
+			strings: {
+				title: "Show me where I am, yo!"
+			}
+		}
+
+		var map = L.map('map', options);
+
+		// add zoom control to top right window position
+		L.control.zoom({
+			position: 'topright'
+		}).addTo(map);
+
+		// add geolocation control to top right window position (Leaflet can handle multiple top-right elements)
+		L.control.locate(locate_options).addTo(map);
+
+		// Get basemap URL from Leaflet Providers
+		var basemap_url = 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+
+		// Get basemap attributes from Leaflet Providers
+		var basemap_attributes = {
+			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+			subdomains: 'abcd',
+			maxZoom: 19
+		};
+		// requests some map tiles
+		var tiles = L.tileLayer(basemap_url, basemap_attributes);
+
+		map.addLayer(tiles);
+
+		// var message = '<h2>University of Kentucky!</h2>Department of Geography';
+		//
+		// L.marker(map.getCenter())
+		// 	.bindPopup(message)
+		// 	.addTo(map)
+
+		// listen for a click event on the map
+
+
+		var myRoute = L.geoJson(routeData, {
+
+			filter: function(feature) {
+				if (feature.geometry.type == "LineString") {
+					return feature;
+				}
+			},
+			style: function(feature) {
+
+				return {
+					color: "#005DAA",
+					weight: 4,
+					opacity: .6,
+					dashArray: "5, 5"
+				}
+			},
+		}).addTo(map);
+
+		// loop through each layer
+		myRoute.eachLayer(function(layer) {
+
+			// set an event listener on each layer
+			layer.on('mouseover', function(e) {
+				e.target.setStyle({
+					color: 'red',
+					opacity: .5,
+					dashArray: "1"
+				});
+			});
+			layer.on('mouseout', function(e) {
+				e.target.setStyle({
+					color: "#005DAA",
+					weight: 4,
+					opacity: .6,
+					dashArray: "5, 5"
+				});
+			});
+		});
+
+
+
+		var myStops = L.geoJson(routeData, {
+
+			filter: function(feature) {
+				if (feature.geometry.type == "Point") {
+					return feature;
+				}
+			},
+			onEachFeature: function(feature, layer) {
+				// console.log(feature.properties)
+				layer.bindPopup(feature.properties.name);
+				layer.on('click', function(e) {
+					map.setView(e.latlng, 15);
+				});
+
+			}
+
+		}).addTo(map);
+
+
+
+		map.fitBounds(myRoute.getBounds());
+	</script>
+
+</body>
+
+</html>

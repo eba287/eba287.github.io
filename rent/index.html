@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset=utf-8 />
+  <title>Lab 09 Starter</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="" />
+  <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #222;
+      /* dark */
+      font-family: Lato, sans-serif;
+      color: #ddd;
+      /* light */
+    }
+
+    header {
+      width: 80%;
+      margin: 10px auto 10px auto;
+      color: white;
+    }
+
+    h1 {
+      display: inline-block;
+      margin-right: 20px;
+      color: white;
+    }
+
+    h2 {
+      display: inline-block;
+      color: white;
+    }
+
+    h3 {
+      display: inline-block;
+      margin-right: 20px;
+      font-family: Lato, sans-serif;
+      color: white;
+    }
+
+    h4 {
+      display: inline-block;
+      color: #001323;
+      font-weight: 800;
+    }
+
+    #map {
+      width: 80%;
+      height: 540px;
+      margin: 10px 10%;
+      background: rgba(63, 63, 63, 0.9);
+      /* with transparency */
+      /* border: 2px solid #dddedf; */
+    }
+
+    footer {
+      padding: 6px 10%;
+      width: 80%;
+    }
+
+    p {
+      font-size: 1em;
+      color: white;
+    }
+
+    a {
+      color: white;
+      font-weight: 400;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .legend {
+      padding: 6px 8px;
+      font-size: 1em;
+      /* Use transparency to blend elements. */
+      border: 2px solid rgba(244, 244, 244, 0.2);
+      background: rgba(100, 100, 100, 0.9);
+      color: rgba(244, 244, 244, 0.8);
+      border-radius: 5px;
+    }
+
+    .legend h3 {
+      font-size: 1.1em;
+      font-weight: normal;
+      color: #001323;
+      margin: 0 0 10px 0;
+    }
+
+    .legend span {
+      width: 20px;
+      height: 20px;
+      float: left;
+      margin: 0 10px 4px 0;
+    }
+
+    .legend label {
+      font-size: 1.1em;
+    }
+
+    .legend label:after {
+      content: '';
+      display: block;
+      clear: both;
+    }
+
+    .leaflet-bar a {
+      /* Override the default style for Leaflet's zoom  */
+      background: rgba(100, 100, 100, 0.9);
+      color: rgba(244, 244, 244, 0.8);
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Rental Housing Affordability</h1>
+  </header>
+
+  <div id='map'></div>
+
+  <footer>
+    <p>Rental housing within the United States is increasingly unaffordable. In 2016, for example, a report by the National Low Income Housing Coalition (NLIHC) found that in no U.S. state, metropolitan area, or county could a full-time worker
+      earning the prevailing minimum wage afford a modest two-bedroom apartment. In order to afford such an apartment, a worker would must earn $20.30 per hour, $5 more than the average hourly wage of most U.S. renters. This map explores the median
+      rent by counties. Click on each county to learn more.
+    </p>
+    <p>Map authored by <a href="https://github.com/eba287" target="blank">Emily Barrett</a></p>
+  </footer>
+
+  <!-- Load scripts using Subresource Integrity (SRI) is a security feature
+      that enables browsers to verify that resources they fetch (from a CDN)
+      are delivered without unexpected manipulation. -->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+  <script src='https://unpkg.com/simple-statistics@7.0.6/dist/simple-statistics.min.js'>
+  </script>
+
+  <script>
+    // MAKE AN AWESOME WEB MAP!
+
+    var options = {
+      center: [38.09, -95.7],
+      zoom: 4.5,
+      zoomSnap: .1,
+      zoomControl: false
+    }
+
+    var map = L.map('map', options);
+
+    map.addControl(L.control.zoom({
+      position: 'topright'
+    }));
+    //
+    // $.getJSON("data/counties_median_rent_2015.json", function(data) {
+    //   // the data loaded from the file is accessible here within this function scope!
+    // });
+
+    var attributeValue = "RENT",
+      countyValue = "NAME";
+
+    var countyLayer = $.getJSON("data/counties_median_rent_2015.json", function(data) {
+      var dataLayer = L.geoJson(data, {
+        style: function(feature) {
+          return {
+            color: '#dddddd',
+            weight: 1,
+            fillOpacity: 1,
+            fillColor: '#1f78b4'
+          };
+        },
+        filter: function(feature) {
+          // console.log(feature.properties[attributeValue]);
+          if (feature.properties[attributeValue] !== null) {
+            // console.log(feature);
+            return feature;
+          }
+        },
+        onEachFeature: function(feature, layer) {
+          var popup = `<h4>${layer.feature.properties.NAME} County:</h4>
+        $${layer.feature.properties.RENT}`;
+          layer.bindTooltip(popup);
+
+        },
+
+      }).addTo(map);
+
+      // call to new function here gets the data out of the
+      // callback function
+      drawMap(dataLayer);
+
+    });
+
+
+    function drawMap(dataLayer) {
+
+      var breaks = getClassBreaks(dataLayer);
+
+      dataLayer.eachLayer(function(layer) {
+        var props = layer.feature.properties;
+        if (props[attributeValue] != null) {
+          layer.setStyle({
+            fillColor: getColor(props[attributeValue], breaks)
+          })
+        }
+      });
+
+      drawLegend(breaks);
+    };
+
+
+    function getClassBreaks(dataLayer) {
+
+      // code here to determine range and establish classification breaks
+      // empty array to hold all our values
+      var values = [];
+
+      dataLayer.eachLayer(function(layer) {
+        var props = layer.feature.properties
+        if (props[attributeValue] != null) {
+
+          // calculate the normalized value
+          var value = parseInt(props[attributeValue]);
+          // console.log(values);
+
+          // push that value to the array
+          values.push(value);
+        }
+      });
+
+      console.log(values); // verify in the Console
+      // determine similar clusters
+      var clusters = ss.ckmeans(values, 5);
+
+      // create an array of the lowest value within each cluster
+      var breaks = clusters.map(function(cluster) {
+        return [cluster[0], cluster.pop()];
+      });
+
+      console.log(breaks); // verify your break values
+      // console.log(breaks[1]);
+      // console.log(breaks[0]);
+      console.log(breaks[3][1]);
+
+      return breaks;
+    };
+
+
+    function getColor(d, breaks) {
+
+      if (d <= breaks[0][1]) {
+        return '#f1eef6';
+      } else if (d <= breaks[1][1]) {
+        return '#bdc9e1';
+      } else if (d <= breaks[2][1]) {
+        return '#74a9cf';
+      } else if (d <= breaks[3][1]) {
+        return '#2b8cbe'
+      } else if (d <= breaks[4][1]) {
+        return '#045a8d'
+      }
+    }; // end getColor
+
+    function drawLegend(breaks) {
+
+      // create a new Leaflet control object, and position it top left
+      var legend = L.control({
+        position: 'bottomleft'
+      });
+
+      // when the legend is added to the map
+      legend.onAdd = function() {
+
+        // create a new HTML <div> element and give it a class name of "legend"
+        var div = L.DomUtil.create('div', 'legend');
+
+        // first append an <h3> tag to the div holding the current attribute
+        // and norm values (i.e., the mapped phenomena)
+        div.innerHTML = "<h3>MEDIAN RENT<br></h3><br>";
+
+        // for each of our breaks
+        for (var i = 0; i < breaks.length; i++) {
+          // determine the color associated with each break value,
+          // including the lower range value
+          var color = getColor(breaks[i][0], breaks);
+
+          // concatenate a <span> tag styled with the color and the range values
+          // of that class and include a label with the low and a high ends of that class range
+          div.innerHTML +=
+            '<span style="background:' + color + '"></span> ' +
+            '<label>' + '$' + (breaks[i][0]).toLocaleString() + ' &mdash; ' +
+            (breaks[i][1]).toLocaleString() + '</label>';
+        }
+
+        // return the populated div to be added to the map
+        return div;
+      };
+
+      // add the legend to the map
+      legend.addTo(map);
+    };
+
+
+    $.when(countyLayer).done(function() {
+      // load, filter, and style the state outline
+      $.getJSON("data/us_states_20m.geojson", function(data) {
+
+        var stateLayer = L.geoJson(data, {
+          style: function(feature) {
+            return {
+              // Let's experiment with these colors shortly
+              color: '#222222', // Gray
+              // color: '#ffffff', // White
+              // Make line weight larger than the county outline
+              weight: .75,
+              fillOpacity: 0,
+              // This property allows us control interactivty of layer
+              interactive: false
+            };
+          }
+        });
+
+        // Add layer to map!
+        stateLayer.addTo(map)
+
+      });
+    });
+  </script>
+
+</body>
+
+</html>
